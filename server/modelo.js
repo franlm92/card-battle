@@ -40,4 +40,5 @@ function Carta(nombre,vidas,ataque,coste){
     
 }
 
+module.exports.Juego = Juego;
 
