@@ -1,12 +1,10 @@
-var modelo = require('../src/modelo.js');
-
 describe("El juego de las cartas...", function() {
   var juego;
   var usr;
 
   beforeEach(function() {
-    juego = new modelo.Juego();
-    usr = new modelo.Usuario("pepe");
+    juego = new Juego();
+    usr = new Usuario("pepe");
   });
 
   it("Debería tener una colección de cartas", function() {
