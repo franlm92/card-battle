@@ -1,10 +1,12 @@
+var modelo = require('../src/modelo.js');
+
 describe("El juego de las cartas...", function() {
   var juego;
   var usr;
 
   beforeEach(function() {
-    juego = new Juego();
-    usr = new Usuario("Pepe");
+    juego = new modelo.Juego();
+    usr = new modelo.Usuario("pepe");
   });
 
   it("Debería tener una colección de cartas", function() {
@@ -20,10 +22,15 @@ describe("El juego de las cartas...", function() {
     expect(usr.mazo.length).toEqual(0);
   });
 
+  it("El usuario debe tener una mano inicialmente sin cartas", function(){
+    expect(usr.mano).toBeDefined();
+    expect(usr.mano.length).toEqual(0);
+  });
+
   it("Agrego al usuario al juego",function(){
     juego.agregarUsuario(usr);
     expect(juego.usuarios.length).toEqual(1);
-    expect(juego.usuarios[0].nombre).toEqual("Pepe");
+    expect(juego.usuarios[0].nombre).toEqual("pepe");
     expect(usr.mazo.length).toEqual(30);
   })
 });
