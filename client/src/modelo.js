@@ -31,8 +31,17 @@ function Juego(){
 	this.crearPartida=function(nombre,usuario){
 		var partida=new Partida(nombre);
 		this.agregarPartida(partida);
-		usuario.partida=partida;
+		partida.asignarUsuario(usuario);
 	}
+	this.asignarPartida=function(nombre, usuario){
+		for (var i=0;i<this.partidas.length;i++){
+			if (this.partidas[i].nombre==nombre){
+				this.partidas[i].asignarUsuario(usuario);
+			}
+		}
+	}
+
+	
 	
 	this.crearColeccion();
 }
@@ -42,6 +51,10 @@ function Partida(nombre){
 	this.tablero=undefined;
 	this.crearTablero=function(){
 		this.tablero=new Tablero();
+	}
+	this.asignarUsuario=function(usuario){
+		usuario.asignarPartida(this);
+		this.tablero.asignarUsuario(usuario);
 	}
 	this.crearTablero();
 }
@@ -53,11 +66,17 @@ function Usuario(nombre){
     this.mazo=[];
 	this.mano=[];
 	this.zona=undefined;
+	this.asignarPartida=function(partida){
+		this.partida=partida;
+	}
 	this.agregarZona=function(zona){
 		this.zona=zona;
 	}
 	this.crearPartida=function(nombre){
 		this.juego.crearPartida(nombre,this);
+	}
+	this.eligePartida=function(nombre){
+		this.juego.asignarPartida(nombre,this);
 	}
 }
 
@@ -77,6 +96,16 @@ function Tablero(){
 		this.agregarZona(new Zona("arriba"));
 		this.agregarZona(new Zona("abajo"));
 	}
+	this.asignarUsuario=function(usuario){
+		for(var i=0;i<this.zonas.length;i++){
+			if(this.zonas[i].libre){
+				usuario.agregarZona(this.zonas[i]);
+				this.zonas[i].libre=false;
+				break;
+			}
+		}
+	}
+
 	this.crearZonas();
 }
 
@@ -84,6 +113,7 @@ function Zona(){
 	this.ataque=[];
 	this.mano=[];
 	this.mazo=[];
+	this.libre=true;
 	this.agregarAtaque=function(carta){
 		this.ataque.push(carta);
 	}
