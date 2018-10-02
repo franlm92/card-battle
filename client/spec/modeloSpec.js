@@ -1,4 +1,4 @@
-describe("El juego de las cartas...", function() {
+describe("El juego 'CardBattle':", function() {
   var juego;
   var usr1, usr2;
 
@@ -38,5 +38,5 @@ describe("El juego de las cartas...", function() {
     expect(juego.usuarios[1].nombre).toEqual("juan");
     expect(usr1.mazo.length).toEqual(30);
     expect(usr2.mazo.length).toEqual(30);
-  })
+  });
 });
