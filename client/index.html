@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>
-            CARD BATTLE
-        </title>
-        <script src="./src/modelo.js"></script>
-        
-    </head>
-    <body>
-        <script>
-            var juego=new Juego();
-            var usr1=new Usuario("pepe");
-            var usr2=new Usuario("juan");
-            juego.agregarUsuario(usr1);    
-            juego.agregarUsuario(usr2);    
-            usr1.crearPartida("prueba");
-            usr2.eligePartida("prueba");
-        </script>
-    </body>
+<head>
+	<title>Card Battle</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+	<script src="./src/modelo.js"></script>
+</head>
+<body>
+	<script>
+		juego=new Juego();
+		//juego.crearUsuario("pepe");
+		//juego.crearUsuario("juan");
+		usr1=new Usuario("pepe");
+		usr2=new Usuario("juan");
+		juego.agregarUsuario(usr1);
+		juego.agregarUsuario(usr2);
+		usr1.crearPartida("prueba");
+		usr2.eligePartida("prueba");
+	</script>
+</body>
 </html>
