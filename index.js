@@ -4,12 +4,36 @@ var host=config.host;
 var port=config.port;
 var exp=require("express");
 var app=exp(); 
-var modelo = require("server/modelo.js");
+var modelo = require("./server/modelo");
 
-var juego = new Juego();
+var juego = new modelo.Juego();
 
 app.get("/",function(request,response){
-	response.send("hola");
+	var json={};
+	response.send(json);
+});
+
+app.get("/agregarUsuario/:nombre",function(request,response){
+    var usr1=new modelo.Usuario(request.params.nombre);
+    var usrid;
+    usrid=juego.agregarUsuario(usr1);
+    response.send({"usrid":usrid});
+});
+
+app.get("/crearPartida/:usrid/:nombre",function(request,response){
+    var usrid=request.params.usrid;
+    var partida=request.params.nombre;
+    var usr=juego.usuarios[usrid];
+    usr.crearPartida(partida);
+    response.send({"res":"ok"});
+});
+
+app.get("/elegirPartida/:usrid/:nombre",function(request,response){
+    var usrid=request.params.usrid;
+    var partida=request.params.nombre;
+    var usr=juego.usuarios[usrid];
+    usr.elegirPartida(partida);
+    response.send({"res":"ok"});
 });
 
 
