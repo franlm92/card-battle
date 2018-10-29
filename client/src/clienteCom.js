@@ -16,6 +16,19 @@ function ClienteCom() {
         this.nombrePartida = nombre;
         this.socket.emit('elegirPartida', this.usrId, nombre);
     };
+    this.obtenerCartasMano = function () {
+        this.socket.emit("obtenerCartasMano", this.usrId, this.nombrePartida);
+    };
+    this.jugarCarta = function (nombreCarta) {
+        /* this.carta = carta;
+        this.nombrePartida = nombre; */
+        this.socket.emit('jugarCarta', this.usrId, this.nombrePartida, nombreCarta);
+    };
+    this.pasarTurno = function () {
+        this.socket.emit('pasarTurno', this.usrId, this.nombrePartida);
+    };
+
+
     this.lanzarSocketSrv = function () {
         var cli = this;
         this.socket.on('connect', function () {
@@ -30,5 +43,24 @@ function ClienteCom() {
         this.socket.on('noUnido', function (partidaId) {
             console.log("El usuario no pudo unirse a la partida id: " + partidaId);
         });
+        this.socket.on('mano', function (mano) {
+            console.log(mano);
+        });
+        this.socket.on('noJugada', function (carta) {
+            console.log("El usuario no pudo jugar la carta con coste: " + carta.coste);
+        });
+        this.socket.on('juegaCarta', function (usrid, carta) {
+            console.log("Usuario " + usrid + " juega la carta correctamente con coste: " + carta.coste);
+        });
+        this.socket.on('noExiste', function (id) {
+            console.log("El usuario con id " + id + " no existe");
+        });
+        this.socket.on('pasaTurno', function (resultado) {
+            console.log("El usuario tiene turno: " + resultado);
+        });
+        this.socket.on('recibeTurno', function () {
+            console.log("Tienes el turno");
+        });
+
     }
 }
