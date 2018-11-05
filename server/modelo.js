@@ -361,6 +361,11 @@ function Usuario(nombre) {
 			return each.posicion == "ataque";
 		});
 	}
+	this.obtenerCartaAtaqueNombre = function (nombre) {
+		return this.mazo.find(function (each) {
+			return each.posicion == "ataque" && each.nombre == nombre;
+		});
+	}
 	this.comprobarCartasAtaque = function () {
 		var carta;
 		var cartasAtaque;
@@ -408,10 +413,28 @@ function Usuario(nombre) {
 	}
 	this.obtenerDatosRival = function () {
 		var rival = this.partida.obtenerRival(this);
-		var json = { "elixir": rival.elixir, "cartas": rival.obtenerCartasAtaque() };
+		var json = { "elixir": rival.elixir, "cartas": rival.obtenerCartasAtaque(), "vidas": rival.vidas };
 		return json;
 	}
-
+	this.rivalTeToca = function () {
+		var rival = this.partida.obtenerRival(this);
+		return rival.meToca();
+	}
+	this.ataqueConNombre = function (idCarta1, idCarta2) {
+		var carta = this.obtenerCartaAtaqueNombre(idCarta1);
+		var rival = this.partida.obtenerRival(this);
+		var objetivo = rival.obtenerCartaAtaqueNombre(idCarta2);
+		this.ataque(carta, objetivo);
+		var json = { "carta": carta, "objetivo": objetivo };
+		return json;
+	}
+	this.atacarRivalConNombre = function (idCarta1) {
+		var carta = this.obtenerCartaAtaqueNombre(idCarta1);
+		var rival = this.partida.obtenerRival(this);
+		this.ataque(carta, rival);
+		var json = { "carta": carta, "vidas": rival.vidas };
+		return json;
+	}
 }
 
 function Carta(nombre, vidas, ataque, coste) {

@@ -1,10 +1,10 @@
 function ComSrv() {
     this.enviarRemitente = function (socket, mens, datos) {
         socket.emit(mens, datos);
-    }
+    };
     this.enviarATodos = function (io, nombre, mens, datos) {
         io.sockets.in(nombre).emit(mens, datos);
-    }
+    };
     this.enviarATodosMenosRemitente = function (socket, nombre, mens, datos) {
         socket.broadcast.to(nombre).emit(mens, datos)
     };
@@ -34,19 +34,29 @@ function ComSrv() {
                     else {
                         console.log("usuario " + usrid + " se une a la partida " + nombrePartida);
                         socket.join(nombrePartida);
-                        var mano = usr.obtenerCartasMano();
-                        var json = { "partidaId": partidaId, "mano": mano };
-                        cli.enviarATodos(io, nombrePartida, "unidoAPartida", json);
+                        //var mano = usr.obtenerCartasMano();
+                        //var json = { "partidaId": partidaId, "mano": mano };
+                        cli.enviarRemitente(socket, "unidoAPartida", partidaId);
+                        cli.enviarATodos(io, nombrePartida, "aJugar", partidaId);
                     }
+                }
+            });
+            socket.on('meToca', function (usrid, nombrePartida) {
+                var usr = juego.usuarios[usrid];
+                if (usr) {
+                    cli.enviarRemitente(socket, "meToca", usr.meToca());
                 }
             });
             socket.on('obtenerCartasMano', function (usrid, nombrePartida) {
                 var usr = juego.usuarios[usrid];
                 if (usr) {
-                    cli.enviarRemitente(socket, "mano", usr.obtenerCartasMano());
+                    cli.enviarRemitente(socket, "mano", { "mano": usr.obtenerCartaMano(), "elixir": usr.elixir });
                 }
-                else {
-                    console.log("usuario " + usrid + "no existe");
+            });
+            socket.on('obtenerCartasAtaque', function (usrid, nombrePartida) {
+                var usr = juego.usuarios[usrid];
+                if (usr) {
+                    cli.enviarRemitente(socket, "cartasAtaque", { "ataque": usr.obtenerCartasAtaque() });
                 }
             });
             socket.on('jugarCarta', function (usrid, nombrePartida, nombreCarta) {
@@ -66,18 +76,32 @@ function ComSrv() {
                     }
                 }
             });
+            socket.on('atacar', function (usrid, nombrePartida, idCarta1, idCarta2) {
+                var usr = juego.usuarios[usrid];
+                if (usr) {
+                    var json = usr.ataqueConNombre(idCarta1, idCarta2);
+                    cli.enviarATodos(io, nombrePartida, "respuestaAtaque", json);
+                }
+            });
+            socket.on('atacarRival', function (usrid, nombrePartida, idCarta1) {
+                var usr = juego.usuarios[usrid];
+                if (usr) {
+                    var json = usr.atacarRivalConNombre(idCarta1);
+                    cli.enviarATodos(io, nombrePartida, "respuestaAtaqueRival", json);
+                }
+            });
             socket.on('pasarTurno', function (usrid, nombrePartida) {
                 var usr = juego.usuarios[usrid];
                 if (usr) {
                     usr.pasarTurno();
                     console.log(usr.nombre + " ha pasado el turno");
                     cli.enviarRemitente(socket, "pasaTurno", usr.meToca());
-                    cli.enviarATodosMenosRemitente(socket, nombrePartida, "recibeTurno", usrid);
+                    cli.enviarATodosMenosRemitente(socket, nombrePartida, "meToca", usr.rivalTeToca());
                 }
             });
             socket.on('obtenerDatosRival', function (usrid, nombrePartida) {
                 var usr = juego.usuarios[usrid];
-                if(usr) cli.enviarRemitente(socket, "datosRival", usr.obtenerDatosRival());
+                if (usr) cli.enviarRemitente(socket, "datosRival", usr.obtenerDatosRival());
             });
         });
     };
