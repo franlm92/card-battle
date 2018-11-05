@@ -111,6 +111,11 @@ function Partida(nombre) {
 		this.fase = new Final();
 		this.quitarTurno();
 	}
+	this.obtenerRival = function (usr) {
+		var i = this.usuariosPartida.indexOf(usr);
+		var j = (i + 1) % 2;
+		return this.usuariosPartida[j];
+	}
 	this.crearTablero();
 }
 
@@ -276,7 +281,7 @@ function Usuario(nombre) {
 	this.puedePasarTurno = function () {
 		this.turno.pasarTurno(this);
 	}
-	this.meToca=function(){
+	this.meToca = function () {
 		this.turno.meToca();
 	}
 	this.esMiTurno = function () {
@@ -401,6 +406,12 @@ function Usuario(nombre) {
 			return each.posicion == "mano" && each.nombre == nombre;
 		});
 	}
+	this.obtenerDatosRival = function () {
+		var rival = this.partida.obtenerRival(this);
+		var json = { "elixir": rival.elixir, "cartas": rival.obtenerCartasAtaque() };
+		return json;
+	}
+
 }
 
 function Carta(nombre, vidas, ataque, coste) {

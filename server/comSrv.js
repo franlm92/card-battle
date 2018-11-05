@@ -1,5 +1,15 @@
 function ComSrv() {
+    this.enviarRemitente = function (socket, mens, datos) {
+        socket.emit(mens, datos);
+    }
+    this.enviarATodos = function (io, nombre, mens, datos) {
+        io.sockets.in(nombre).emit(mens, datos);
+    }
+    this.enviarATodosMenosRemitente = function (socket, nombre, mens, datos) {
+        socket.broadcast.to(nombre).emit(mens, datos)
+    };
     this.lanzarSocketSrv = function (io, juego) {
+        var cli = this;
         io.on('connection', function (socket) {
             socket.on('crearPartida', function (usrid, nombrePartida) {
                 console.log('nueva partida: ', usrid, nombrePartida);
@@ -9,7 +19,7 @@ function ComSrv() {
                     console.log("usuario " + usrid + " crea partida " + nombrePartida);
                     partidaId = usr.crearPartida(nombrePartida);
                     socket.join(nombrePartida);
-                    io.sockets.in(nombrePartida).emit("partidaCreada", partidaId);
+                    cli.enviarATodos(io, nombrePartida, "partidaCreada", partidaId);
                 }
             });
             socket.on('elegirPartida', function (usrid, nombrePartida) {
@@ -19,19 +29,24 @@ function ComSrv() {
                     partidaId = usr.eligePartida(nombrePartida);
                     if (partidaId < 0) {
                         console.log("usuario " + usrid + " NO se pudo unir a la partida " + nombrePartida);
-                        socket.emit("noUnido", partidaId);
+                        cli.enviarRemitente(socket, "noUnido", partidaId);
                     }
                     else {
                         console.log("usuario " + usrid + " se une a la partida " + nombrePartida);
                         socket.join(nombrePartida);
-                        io.sockets.in(nombrePartida).emit("unidoAPartida", partidaId);
+                        var mano = usr.obtenerCartasMano();
+                        var json = { "partidaId": partidaId, "mano": mano };
+                        cli.enviarATodos(io, nombrePartida, "unidoAPartida", json);
                     }
                 }
             });
             socket.on('obtenerCartasMano', function (usrid, nombrePartida) {
                 var usr = juego.usuarios[usrid];
                 if (usr) {
-                    socket.emit("mano", usr.obtenerCartasMano());
+                    cli.enviarRemitente(socket, "mano", usr.obtenerCartasMano());
+                }
+                else {
+                    console.log("usuario " + usrid + "no existe");
                 }
             });
             socket.on('jugarCarta', function (usrid, nombrePartida, nombreCarta) {
@@ -39,23 +54,16 @@ function ComSrv() {
                 var carta;
                 if (usr) {
                     carta = usr.obtenerCartaMano(nombreCarta);
-                    /*if (cartaId.coste == undefined) {
-                        console.log("usuario " + usrid + " NO pudo jugar esta carta porque no estaba en su mano");
-                        //sirve para enviar mensajes al cliente
-                        socket.emit("noJugadaNoMano", cartaId);
-                    }
-                    else { */
                     usr.jugarCarta(carta);
                     if (carta.posicion == "ataque") {
                         console.log("usuario " + usrid + " juega la carta con coste: " + carta.coste);
-                        io.sockets.in(nombrePartida).emit("juegaCarta", usrid, carta);
+                        var json = { "usrid": usrid, "carta": carta, "elixir": usr.elixir };
+                        cli.enviarATodos(io, nombrePartida, "juegaCarta", json);
                     }
                     else {
                         console.log("usuario " + usrid + " NO pudo jugar la carta con coste: " + carta.coste);
-                        //sirve para enviar mensajes al cliente
-                        socket.emit("noJugada", carta);
+                        cli.enviarRemitente(socket, "noJugada", carta);
                     }
-                    //}
                 }
             });
             socket.on('pasarTurno', function (usrid, nombrePartida) {
@@ -63,13 +71,13 @@ function ComSrv() {
                 if (usr) {
                     usr.pasarTurno();
                     console.log(usr.nombre + " ha pasado el turno");
-                    //io.sockets.in(nombrePartida).emit("pasaTurno", usrid);
-                    socket.emit("pasaTurno", usr.meToca());
-                    socket.broadcast.to(nombrePartida).emit("recibeTurno");
-                } /* else {
-                    console.log("usuario " + usrid + "NO puede pasar turno porque no existe");
-                    socket.emit("noExiste", usrid);
-                } */
+                    cli.enviarRemitente(socket, "pasaTurno", usr.meToca());
+                    cli.enviarATodosMenosRemitente(socket, nombrePartida, "recibeTurno", usrid);
+                }
+            });
+            socket.on('obtenerDatosRival', function (usrid, nombrePartida) {
+                var usr = juego.usuarios[usrid];
+                if(usr) cli.enviarRemitente(socket, "datosRival", usr.obtenerDatosRival());
             });
         });
     };

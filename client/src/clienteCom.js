@@ -61,6 +61,11 @@ function ClienteCom() {
         this.socket.on('recibeTurno', function () {
             console.log("Tienes el turno");
         });
+        this.socket.on('datosRival', function (datos) {
+            console.log(datos);
+            usr.datosRival = datos;
+        });
 
     }
+
 }
