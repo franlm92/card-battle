@@ -61,10 +61,10 @@ function Partida(nombre) {
 	this.id = undefined;
 	this.usuariosPartida = [];
 	this.fase = new Inicial();
-	this.tablero = undefined;
-	this.crearTablero = function () {
-		this.tablero = new Tablero();
-	}
+	//this.tablero=undefined;
+	// this.crearTablero=function(){
+	// 	this.tablero=new Tablero();
+	// }
 	this.asignarUsuario = function (usuario) {
 		// usuario.asignarPartida(this);
 		// this.usuariosPartida.push(usuario);
@@ -75,7 +75,7 @@ function Partida(nombre) {
 	this.puedeAsignarUsuario = function (usuario) {
 		usuario.asignarPartida(this);
 		this.usuariosPartida.push(usuario);
-		this.tablero.asignarUsuario(usuario);
+		//this.tablero.asignarUsuario(usuario);
 		this.comprobarInicio();
 	}
 	this.comprobarInicio = function () {
@@ -116,7 +116,7 @@ function Partida(nombre) {
 		var j = (i + 1) % 2;
 		return this.usuariosPartida[j];
 	}
-	this.crearTablero();
+	//this.crearTablero();
 }
 
 function Inicial() {
@@ -165,43 +165,43 @@ function Final() {
 }
 
 
-function Tablero() {
-	this.zonas = [];
-	this.agregarZona = function (zona) {
-		this.zonas.push(zona);
-	}
-	this.crearZonas = function () {
-		this.agregarZona(new Zona("arriba"));
-		this.agregarZona(new Zona("abajo"));
-	}
-	this.asignarUsuario = function (usuario) {
-		for (var i = 0; i < this.zonas.length; i++) {
-			if (this.zonas[i].libre) {
-				usuario.agregarZona(this.zonas[i]);
-				this.zonas[i].libre = false;
-				break;
-			}
-		}
-	}
-	this.crearZonas();
-}
+// function Tablero(){
+// 	this.zonas=[];
+// 	this.agregarZona=function(zona){
+// 		this.zonas.push(zona);
+// 	}
+// 	this.crearZonas=function(){
+// 		this.agregarZona(new Zona("arriba"));
+// 		this.agregarZona(new Zona("abajo"));
+// 	}
+// 	this.asignarUsuario=function(usuario){
+// 		for(var i=0;i<this.zonas.length;i++){
+// 			if(this.zonas[i].libre){
+// 				usuario.agregarZona(this.zonas[i]);
+// 				this.zonas[i].libre=false;
+// 				break;
+// 			}
+// 		}
+// 	}
+// 	this.crearZonas();
+// }
 
-function Zona(nombre) {
-	this.nombre = nombre;
-	this.ataque = [];
-	this.mano = [];
-	this.mazo = [];
-	this.libre = true;
-	this.agregarAtaque = function (carta) {
-		this.ataque.push(carta);
-	}
-	this.agregarMano = function (carta) {
-		this.mano.push(carta);
-	}
-	this.agregarMazo = function (mazo) {
-		this.mazo = mazo;
-	}
-}
+// function Zona(nombre){
+// 	this.nombre=nombre;
+// 	this.ataque=[];
+// 	this.mano=[];
+// 	this.mazo=[];
+// 	this.libre=true;
+// 	this.agregarAtaque=function(carta){
+// 		this.ataque.push(carta);
+// 	}
+// 	this.agregarMano=function(carta){
+// 		this.mano.push(carta);
+// 	}
+// 	this.agregarMazo=function(mazo){
+// 		this.mazo=mazo;
+// 	}
+// }
 
 function MiTurno() {
 	this.pasarTurno = function (usr) {
@@ -256,15 +256,15 @@ function Usuario(nombre) {
 	//this.ataque=[];
 	this.elixir = 1;
 	this.turno = new NoMiTurno();
-	this.zona = undefined;
+	//this.zona=undefined;
 	this.partida = undefined;
 	this.consumido = 0;
 	this.asignarPartida = function (partida) {
 		this.partida = partida;
 	}
-	this.agregarZona = function (zona) {
-		this.zona = zona;
-	}
+	// this.agregarZona=function(zona){
+	// 	this.zona=zona;
+	// }
 	this.crearPartida = function (nombre) {
 		return this.juego.crearPartida(nombre, this);
 	}
@@ -282,7 +282,7 @@ function Usuario(nombre) {
 		this.turno.pasarTurno(this);
 	}
 	this.meToca = function () {
-		this.turno.meToca();
+		return this.turno.meToca();
 	}
 	this.esMiTurno = function () {
 		this.turno.esMiTurno(this);
@@ -403,10 +403,6 @@ function Usuario(nombre) {
 		carta.posicion = "cementerio";
 	}
 	this.obtenerCartaMano = function (nombre) {
-		//var carta={};
-		// if ( this.mazo[id].posicion == "mano" ) {
-		//     carta=this.mazo[id];
-		// } 
 		return carta = this.mazo.find(function (each) {
 			return each.posicion == "mano" && each.nombre == nombre;
 		});
